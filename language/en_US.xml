@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<language>
+    
+    <display_name>Vertical Search Importer</display_name>
+    <icon>fa-search</icon>
+    <description>
+        Bot for importing Vertical Search feeds into posts.
+    </description>
+    
+    <settings_data>
+        <title>Vertical Search Importer</title>
+        
+        <specs key="feed_url">
+            <title>VS feed URL</title>
+            <description><![CDATA[
+                Specify the URL of the Vertical Search feed to pull articles from.
+            ]]></description>
+            <type>text</type>
+        </specs>
+        
+        <specs key="item_url_prefix">
+            <title>VS single item URL prefix</title>
+            <description><![CDATA[
+                Specify the single item URL prefix to pull a single article contents.
+            ]]></description>
+            <type>text</type>
+        </specs>
+        
+        <specs key="user_agents">
+            <title>User Agents for the file fetchers</title>
+            <description><![CDATA[
+                If you want to use different user agent strings for the file fetchers,
+                specify one per line here. 
+            ]]></description>
+            <type>code</type>
+        </specs>
+        
+        <specs key="user_level">
+            <title>User level for source accounts</title>
+            <description><![CDATA[
+                Specify the level to set to user accounts created for article sources.<br>
+                Default: <code>100</code> (Author)
+            ]]></description>
+            <type>user_level_selector</type>
+        </specs>
+        
+        <specs key="default_account_id">
+            <title>Account id fallback</title>
+            <description><![CDATA[
+                When a source account cannot be created, the article will be set
+                to the specified user id.<br>
+                Default: <code>100000000000000</code> (Default Admin account)
+            ]]></description>
+            <type>number</type>
+        </specs>
+        
+        <specs key="default_category_id">
+            <title>Category id fallback</title>
+            <description><![CDATA[
+                When an article can't be set to any category, set the one provided here.<br>
+                Default: <code>0000000000000</code> (Default category id)
+            ]]></description>
+            <type>text</type>
+        </specs>
+        
+        <specs key="categories">
+            <title>Categories and keywords</title>
+            <description><![CDATA[
+                Specify the categories and the keywords to match against in contents
+                for automatic assignment using the next syntax:<br>
+                <pre style="color: black; background-color: #f3ffdb; padding: 5px">Category name: keyword, keyword, keyword...
+
+Other category name: keyword, keyword, keyword, keyword,
+keyword, keyword, keyword...
+
+# This is a comment!
+
+Yet another category name: keyword, keyword, keyword...
+</pre>
+                <b>Note:</b> you can use multiple lines as needed, but use <b>an empty blank line</b>
+                to separate one category from the next.<br><br>
+                
+                <b>Important:</b> if you rename a category listed here, make sure you
+                also rename it in the categories editor or the category will be created and
+                only new articles will be set to it. 
+            ]]></description>
+            <type>code</type>
+        </specs>
+        
+    </settings_data>
+
+</language>
