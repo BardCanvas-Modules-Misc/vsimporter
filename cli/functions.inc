@@ -32,6 +32,8 @@ function set_category_and_tags()
         );
         $post->main_category = $default_category_id;
         
+        find_featured_keywords();
+        
         return;
     }
     
@@ -46,7 +48,7 @@ function set_category_and_tags()
     $score           = current($hits);
     $category_id     = $category_ids_by_title[$winner_category];
     cli_colortags::write(
-        "<light_gray> │ > Post category will be set to </light_gray><light_blue>$winner_category</light_blue> " .
+        "<light_gray> │   Post category will be set to </light_gray><light_blue>$winner_category</light_blue> " .
         "<light_gray>(#$category_id). Score: </light_gray><light_blue>$score</light_blue>.</light_gray>\n"
     );
     $post->main_category = $category_id;
@@ -54,6 +56,35 @@ function set_category_and_tags()
     # Adding hashtags
     foreach($matches[$winner_category] as $keyword => $kcount)
         $tags[] = str_replace(array(" ", "-"), "", ucwords($keyword));
+    
+    find_featured_keywords();
+}
+
+function find_featured_keywords()
+{
+    global $tags, $raw_content, $featured_keywords, $featured_tag;
+    
+    if( empty($featured_tag) ) return;
+    
+    $matches = array();
+    foreach($featured_keywords as $keyword)
+    {
+        $keyword = strtolower($keyword);
+        $kcount  = substr_count($raw_content, $keyword);
+        
+        if( $kcount == 0 ) continue;
+        
+        $matches[$keyword] = $kcount;
+    }
+    
+    if( empty($matches) ) return;
+    if( count($matches) < 3 ) return;
+    
+    cli_colortags::write(
+        "<light_cyan> │   Post flagged as featured (keyword hits: #" . implode(", #", array_keys($matches)) . ")</light_cyan>\n"
+    );
+    
+    $tags[] = $featured_tag;
 }
 
 function forge_author()
@@ -63,7 +94,7 @@ function forge_author()
     $post_domain = current(explode("/", preg_replace('#http://|https://|www\.#i', "", $page->url)));
     if( empty($post_domain) )
     {
-        cli_colortags::write("<yellow> │ > Couldn't extract domain for author check! Setting author to fallback account id.</yellow>\n");
+        cli_colortags::write("<yellow> │   Couldn't extract domain for author check! Setting author to fallback account id.</yellow>\n");
         $author = new account($fallback_account);
     }
     else
@@ -74,7 +105,7 @@ function forge_author()
         {
             if( $author->level != $user_level )
             {
-                cli_colortags::write("<yellow> │ > Author account found, but it doesn't have the proper level!</yellow>\n");
+                cli_colortags::write("<yellow> │   Author account found, but it doesn't have the proper level!</yellow>\n");
                 cli_colortags::write("<yellow> │   Will be set to fallback account id.</yellow>\n");
                 $author = new account($fallback_account);
             }
@@ -93,7 +124,7 @@ function forge_author()
             $author->level         = $user_level;
             $author->save();
             
-            cli_colortags::write("<green> │ > Author '$author->display_name' account created. Id: $author->id_account</green>\n");
+            cli_colortags::write("<green> │   Author '$author->display_name' account created. Id: $author->id_account</green>\n");
         }
     }
     $post->id_author = $author->id_account;
@@ -121,11 +152,11 @@ function get_featured_image($url, $referer = "")
     $filename  = basename(parse_url($url, PHP_URL_PATH));
     $extension = strtolower(end(explode(".", $filename)));
     
-    cli_colortags::write("<light_blue> │ > Fetching main image from source...</light_blue>\n");
+    cli_colortags::write("<light_blue> │   Fetching main image from source...</light_blue>\n");
     
     if( ! in_array($extension, array("png", "jpg", "jpeg", "gif")) )
     {
-        cli_colortags::write("<yellow> │ > $filename is not a valid image! Main image wont be set.</yellow>\n");
+        cli_colortags::write("<yellow> │   $filename is not a valid image! Main image wont be set.</yellow>\n");
         
         return null;
     }
@@ -165,7 +196,7 @@ function get_featured_image($url, $referer = "")
     if( curl_error($ch) )
     {
         $error = curl_error($ch);
-        cli_colortags::write("<yellow> │ > Can't fetch image from {$url}: $error. Image ignored.</yellow>\n");
+        cli_colortags::write("<yellow> │   Can't fetch image from {$url}: $error. Image ignored.</yellow>\n");
         
         return null;
     }
@@ -174,14 +205,14 @@ function get_featured_image($url, $referer = "")
     
     if( empty($contents) )
     {
-        cli_colortags::write("<yellow> │ > Image from {$url} is empty. Image ignored.</yellow>\n");
+        cli_colortags::write("<yellow> │   Image from {$url} is empty. Image ignored.</yellow>\n");
         
         return null;
     }
     
     if( ! @file_put_contents($file["tmp_name"], $contents) )
     {
-        cli_colortags::write("<yellow> │ > Cannot save image {$file["tmp_name"]}. Image ignored.</yellow>\n");
+        cli_colortags::write("<yellow> │   Cannot save image {$file["tmp_name"]}. Image ignored.</yellow>\n");
         
         return null;
     }
@@ -201,12 +232,12 @@ function get_featured_image($url, $referer = "")
     $res = $media_repository->receive_and_save($item_data, $file, true, true, $author);
     if( is_string($res) )
     {
-        cli_colortags::write("<yellow> │ > Cannot save media item: $res. Image ignored.</yellow>\n");
+        cli_colortags::write("<yellow> │   Cannot save media item: $res. Image ignored.</yellow>\n");
         
         return null;
     }
     
-    cli_colortags::write("<light_blue> │ > Done. Image id set to $res->id_media.</light_blue>\n");
+    cli_colortags::write("<light_blue> │   Done. Image id set to $res->id_media.</light_blue>\n");
     
     return $res;
 }

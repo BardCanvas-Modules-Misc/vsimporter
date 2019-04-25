@@ -87,6 +87,17 @@ Yet another category name: keyword, keyword, keyword...
             <type>code</type>
         </specs>
         
+        <specs key="featured_keywords">
+            <title>Featured article keywords</title>
+            <description><![CDATA[
+                 Specify a comma-separated list of the keywords an article should have
+                 to stick it a "featured" tag (as defined in the
+                 <span class="framed_content inlined">Posts reading/writing options</span>).<br>
+                 When at least 3 of the keywords match, the tag will be set.
+            ]]></description>
+            <type>textarea</type>
+        </specs>
+        
     </settings_data>
 
 </language>

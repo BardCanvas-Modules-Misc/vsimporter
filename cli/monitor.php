@@ -176,6 +176,28 @@ cli_colortags::write("<cyan>Categories check finished.</cyan>\n");
 cli_colortags::write("<cyan>Starting feed integration</cyan>\n");
 #-----------------------------------------------------------------#
 
+$posts_repository = new posts_repository();
+$media_repository = new media_repository();
+
+$user_level = $settings->get("modules:vsimporter.user_level");
+if( empty($user_level) ) $user_level = 100;
+
+$fallback_account = $settings->get("modules:vsimporter.default_account_id");
+if( empty($fallback_account) ) $fallback_account = 100000000000000;
+
+$excerpt_length = $settings->get("modules:posts.excerpt_length");
+if( empty($excerpt_length) ) $excerpt_length = 30;
+
+$default_category_id = $settings->get("modules:vsimporter.default_category_id");
+if( empty($default_category_id) ) $default_category_id = "0000000000000";
+
+$featured_tag          = $settings->get("modules:posts.featured_posts_tag");
+$raw_featured_keywords = $settings->get("modules:vsimporter.featured_keywords");
+$featured_keywords     = empty($raw_featured_keywords) ? array() : preg_split('/\s*,\s*/', $raw_featured_keywords);
+
+if( empty($featured_tag) )      cli_colortags::write("<brown> * Note: featured tag is empty. No posts will be set as featured.</brown> ");
+if( empty($featured_keywords) ) cli_colortags::write("<brown> * Note: featured keywords list is empty. No posts will be set as featured.</brown> ");
+
 cli_colortags::write("<light_gray> > Fetching feed...</light_gray> ");
 
 $ch = curl_init();
@@ -233,21 +255,6 @@ if( empty($feed->pages) )
 
 $feed->pages = (array) $feed->pages;
 
-$posts_repository = new posts_repository();
-$media_repository = new media_repository();
-
-$user_level = $settings->get("modules:vsimporter.user_level");
-if( empty($user_level) ) $user_level = 100;
-
-$fallback_account = $settings->get("modules:vsimporter.default_account_id");
-if( empty($fallback_account) ) $fallback_account = 100000000000000;
-
-$excerpt_length = $settings->get("modules:posts.excerpt_length");
-if( empty($excerpt_length) ) $excerpt_length = 30;
-
-$default_category_id = $settings->get("modules:vsimporter.default_category_id");
-if( empty($default_category_id) ) $default_category_id = "0000000000000";
-
 $index = 0;
 $count = count($feed->pages);
 cli_colortags::write("<light_gray> ┌ Starting loop on $count pages...</light_gray>\n");
@@ -283,7 +290,7 @@ foreach($feed->pages as $page)
     
     # Fetch article
     $article_url = $item_url_prefix . urlencode($page->url);
-    cli_colortags::write("<light_gray> │ > Fetching article...</light_gray> ");
+    cli_colortags::write("<light_gray> │   Fetching article...</light_gray> ");
     $ch = curl_init();
     curl_setopt( $ch, CURLOPT_URL,            $article_url);
     curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true     );
@@ -378,7 +385,7 @@ foreach($feed->pages as $page)
     
     if( ! empty($post->id_featured_image) ) $posts_repository->set_media_items(array($post->id_featured_image), $post->id_post);
     
-    cli_colortags::write("<green> │ > Post saved.</green>");
+    cli_colortags::write("<green> │   Post saved.</green>");
     
     if( ! empty($tags) )
     {
