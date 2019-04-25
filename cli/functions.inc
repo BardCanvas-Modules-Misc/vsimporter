@@ -6,18 +6,17 @@ use hng2_tools\cli_colortags;
 
 function set_category_and_tags()
 {
-    global $tags, $raw_conent, $setting_categories, $post, $default_category_id, $category_ids_by_title;
+    global $tags, $raw_content, $setting_categories, $post, $default_category_id, $category_ids_by_title;
     
-    $hits       = array();
-    $matches    = array();
-    $raw_conent = strtolower($raw_conent);
+    $hits    = array();
+    $matches = array();
     
     foreach($setting_categories as $title => $keywords)
     {
         foreach($keywords as $keyword)
         {
             $keyword = strtolower($keyword);
-            $kcount  = substr_count($raw_conent, $keyword);
+            $kcount  = substr_count($raw_content, $keyword);
             
             if( $kcount == 0 ) continue;
             

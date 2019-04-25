@@ -327,9 +327,9 @@ foreach($feed->pages as $page)
         
         continue;
     }
-    $article    = current($obj->pages);
-    $paragraphs = explode("\n\n", $article->summary);
-    $raw_conent = "$post->title\n\n";
+    $article     = current($obj->pages);
+    $paragraphs  = explode("\n\n", $article->summary);
+    $raw_content = "$post->title\n\n";
     foreach($paragraphs as $paragraph)
     {
         $paragraph = trim($paragraph);
@@ -338,11 +338,12 @@ foreach($feed->pages as $page)
         if( $paragraph == "." ) continue;
         
         $paragraph      = preg_replace('/ \./', "", $paragraph);
-        $raw_conent    .= "$paragraph\n\n";
+        $raw_content   .= "$paragraph\n\n";
         $post->content .= "<p>$paragraph</p>\n";
     }
+    $raw_content = strtolower($raw_content);
     
-    # Scan categories
+    # Scan categories and tags
     $tags = array();
     set_category_and_tags();
     if( ! empty($tags) ) $post->content .= "<p>#" . implode(" #", $tags) . "</p>";
