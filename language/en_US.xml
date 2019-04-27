@@ -7,6 +7,11 @@
         Bot for importing Vertical Search feeds into posts.
     </description>
     
+    <source>Source:</source>
+    <continue_reading><![CDATA[
+        <i class="fa fa-external-link"></i> Continue reading
+    ]]></continue_reading>
+    
     <settings_data>
         <title>Vertical Search Importer</title>
         
@@ -96,6 +101,32 @@ Yet another category name: keyword, keyword, keyword...
                  When at least 3 of the keywords match, the tag will be set.
             ]]></description>
             <type>textarea</type>
+        </specs>
+        
+        <specs key="trim_contents">
+            <title>Trim contents</title>
+            <description><![CDATA[
+                If you want to trim the contents on the article view and show a link
+                to the source URL to force the user to continue reading the original,
+                specify the amount of characters to show.<br>
+                <b>Note:</b> The trimmer will find the last paragraph within the specified
+                amount, so the actual amount of characters being rendered might be below
+                the value you specify.<br>
+                By default, contents aren't trimmed. You should specify a value around the
+                <code>500</code>~<code>1000</code> characters.<br>
+                Leave empty to ignore trimming.
+            ]]></description>
+            <type>number</type>
+        </specs>
+        
+        <specs key="last_article_id">
+            <title>Last fetched article id</title>
+            <description><![CDATA[
+                This value is stored by the fetcher. You normally wouldn't have to
+                modify it here, but if you need to re-fetch articles, set here the number 
+                the fetcher should start with before the next run.
+            ]]></description>
+            <type>number</type>
         </specs>
         
     </settings_data>

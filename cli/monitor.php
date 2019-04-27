@@ -80,7 +80,7 @@ if( empty($raw_categories) )
 
 if( self_running_checker() )
 {
-    cli_colortags::write("<red>\n[$now] Another instance is running. Aborting.</red>\n\n");
+    cli_colortags::write("\n<red>[$now] Another instance is running. Aborting.</red>\n\n");
     
     die();
 }
@@ -107,9 +107,9 @@ foreach(explode("\n", $raw_categories) as $line)
     {
         # Category initiator
         
-        $parts = explode(":", $line);
+        $parts          = explode(":", $line);
         $category_title = trim($parts[0]);
-        $keywords         = preg_split('/\s*,\s*/', trim($parts[1]));
+        $keywords       = preg_split('/\s*,\s*/', trim($parts[1]));
     }
     else
     {
@@ -172,9 +172,9 @@ foreach($setting_categories as $title => $keywords)
 }
 cli_colortags::write("<cyan>Categories check finished.</cyan>\n");
 
-#-----------------------------------------------------------------#
+#---------------------------------------------------------------#
 cli_colortags::write("<cyan>Starting feed integration</cyan>\n");
-#-----------------------------------------------------------------#
+#---------------------------------------------------------------#
 
 $posts_repository = new posts_repository();
 $media_repository = new media_repository();
@@ -198,7 +198,16 @@ $featured_keywords     = empty($raw_featured_keywords) ? array() : preg_split('/
 if( empty($featured_tag) )      cli_colortags::write("<brown> * Note: featured tag is empty. No posts will be set as featured.</brown> ");
 if( empty($featured_keywords) ) cli_colortags::write("<brown> * Note: featured keywords list is empty. No posts will be set as featured.</brown> ");
 
-cli_colortags::write("<light_gray> > Fetching feed...</light_gray> ");
+$offset = $settings->get("modules:vsimporter.last_article_id");
+if( $offset == "" )
+{
+    cli_colortags::write("<light_gray> > Fetching feed...</light_gray> ");
+}
+else
+{
+    $feed_url .= "&o=$offset";
+    cli_colortags::write("<white> > Fetching feed starting from offset $offset...</white> ");
+}
 
 $ch = curl_init();
 curl_setopt( $ch, CURLOPT_URL,            $feed_url);
@@ -255,11 +264,13 @@ if( empty($feed->pages) )
 
 $feed->pages = (array) $feed->pages;
 
-$index = 0;
-$count = count($feed->pages);
+$lastpid = 0;
+$index   = 0;
+$count   = count($feed->pages);
 cli_colortags::write("<light_gray> ┌ Starting loop on $count pages...</light_gray>\n");
 foreach($feed->pages as $page)
 {
+    if( $page->id > $lastpid ) $lastpid = $page->id;
     $index++;
     
     # Pre-forging
@@ -276,9 +287,12 @@ foreach($feed->pages as $page)
         "last_udpate"     => date("Y-m-d H:i:s"),
     ));
     
-    # Check for existence by id
-    $tmp = $posts_repository->get($post->id_post);
-    if( ! is_null($tmp) )
+    # Check for existence by permalink
+    $src_key = "vsimporter.source_url";
+    $plink   = addslashes(serialize($page->url));
+    $filter  = array("id_post in (select post_meta.id_post from post_meta where post_meta.name = '$src_key' and post_meta.value = '$plink')");
+    $found   = $posts_repository->get_record_count($filter);
+    if( $found > 0 )
     {
         # cli_colortags::write("<yellow> │ ($index/$count) Post #$post->id_post '$post->title' exists - skipped.</yellow>\n");
         
@@ -321,7 +335,7 @@ foreach($feed->pages as $page)
     if( empty($obj) )
     {
         cli_colortags::write(
-            "<yellow> │   Article malformed! It seems to be an invalid JSON object. Skipping it</yellow>\n"
+            "<yellow> │   Warning: article malformed! It seems to be an invalid JSON object. Skipping it</yellow>\n"
         );
         
         continue;
@@ -329,13 +343,15 @@ foreach($feed->pages as $page)
     if( empty($obj->pages) )
     {
         cli_colortags::write(
-            "<yellow> │   Article doesn't seem to have contents. Skipping it.</yellow>\n"
+            "<yellow> │   Warning: article doesn't seem to have contents. Skipping it.</yellow>\n"
         );
         
         continue;
     }
     $article     = current($obj->pages);
-    $paragraphs  = explode("\n\n", $article->summary);
+    /** @noinspection HtmlDeprecatedTag */
+    $contents    = strip_tags($article->summary, "<b><i><em><strong><u><strike><sup><sub><br>");
+    $paragraphs  = explode("\n\n", $contents);
     $raw_content = "$post->title\n\n";
     foreach($paragraphs as $paragraph)
     {
@@ -362,9 +378,6 @@ foreach($feed->pages as $page)
     # Forge author
     forge_author();
     
-    # Source addition
-    $post->content .= "<p><i>Source: <a href='$page->url' target='_blank'>$page->url</a></i></p>\n";
-    
     # Featured image
     if( ! empty($page->main_image_url) )
     {
@@ -374,7 +387,7 @@ foreach($feed->pages as $page)
             $post->id_featured_image = $item->id_media;
             
             $post->content = sprintf(
-                    '<p class="aligncenter"><img src="%s" data-id-media="%s" data-media-type="image"></p>\n',
+                    '<p class="aligncenter"><img src="%s" data-id-media="%s" data-media-type="image"></p>' . "\n",
                     $item->get_item_url(),
                     $item->id_media
                 ) . $post->content;
@@ -382,6 +395,7 @@ foreach($feed->pages as $page)
     }
     
     $posts_repository->save($post);
+    $post->set_meta($src_key, $page->url);
     
     if( ! empty($post->id_featured_image) ) $posts_repository->set_media_items(array($post->id_featured_image), $post->id_post);
     
@@ -397,8 +411,11 @@ foreach($feed->pages as $page)
     cli_colortags::write("\n");
 }
 cli_colortags::write("<light_gray> └ Loop finished.</light_gray>\n");
-
-
+if( ! empty($lastpid) )
+{
+    $settings->set("modules:vsimporter.last_article_id", $lastpid);
+    cli_colortags::write("<light_cyan>Last article id set to $lastpid</light_cyan>\n");
+}
 
 cli_colortags::write("<cyan>Feed integration finished.</cyan>\n");
 

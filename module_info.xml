@@ -18,4 +18,12 @@
         <disable>true</disable>
     </working_flags>
     
+    <extends_to>
+        <posts>
+            <post_record_class>
+                <get_processed_content priority="001">extenders/single_post_content_trimmer.inc</get_processed_content>
+            </post_record_class>
+        </posts>
+    </extends_to>
+    
 </module>

@@ -28,7 +28,7 @@ function set_category_and_tags()
     if( empty($matches) )
     {
         cli_colortags::write(
-            "<yellow> │   Article didn't hit any category. Setting it to fallback.</yellow>\n"
+            "<yellow> │   Warning: article didn't hit any category. Setting it to fallback.</yellow>\n"
         );
         $post->main_category = $default_category_id;
         
@@ -94,7 +94,7 @@ function forge_author()
     $post_domain = current(explode("/", preg_replace('#http://|https://|www\.#i', "", $page->url)));
     if( empty($post_domain) )
     {
-        cli_colortags::write("<yellow> │   Couldn't extract domain for author check! Setting author to fallback account id.</yellow>\n");
+        cli_colortags::write("<yellow> │   Warning: couldn't extract domain for author check! Setting author to fallback account id.</yellow>\n");
         $author = new account($fallback_account);
     }
     else
@@ -105,8 +105,7 @@ function forge_author()
         {
             if( $author->level != $user_level )
             {
-                cli_colortags::write("<yellow> │   Author account found, but it doesn't have the proper level!</yellow>\n");
-                cli_colortags::write("<yellow> │   Will be set to fallback account id.</yellow>\n");
+                cli_colortags::write("<yellow> │   Warning: author account found, but it doesn't have the proper level! Fallback account will be used.</yellow>\n");
                 $author = new account($fallback_account);
             }
         }
@@ -156,7 +155,7 @@ function get_featured_image($url, $referer = "")
     
     if( ! in_array($extension, array("png", "jpg", "jpeg", "gif")) )
     {
-        cli_colortags::write("<yellow> │   $filename is not a valid image! Main image wont be set.</yellow>\n");
+        cli_colortags::write("<yellow> │   Warning: $filename is not a valid image! Main image wont be set.</yellow>\n");
         
         return null;
     }
@@ -196,7 +195,7 @@ function get_featured_image($url, $referer = "")
     if( curl_error($ch) )
     {
         $error = curl_error($ch);
-        cli_colortags::write("<yellow> │   Can't fetch image from {$url}: $error. Image ignored.</yellow>\n");
+        cli_colortags::write("<yellow> │   Warning: can't fetch image from {$url}: $error. Image ignored.</yellow>\n");
         
         return null;
     }
@@ -205,14 +204,14 @@ function get_featured_image($url, $referer = "")
     
     if( empty($contents) )
     {
-        cli_colortags::write("<yellow> │   Image from {$url} is empty. Image ignored.</yellow>\n");
+        cli_colortags::write("<yellow> │   Warning: image from {$url} is empty. Image ignored.</yellow>\n");
         
         return null;
     }
     
     if( ! @file_put_contents($file["tmp_name"], $contents) )
     {
-        cli_colortags::write("<yellow> │   Cannot save image {$file["tmp_name"]}. Image ignored.</yellow>\n");
+        cli_colortags::write("<yellow> │   Warning: cannot save image {$file["tmp_name"]}. Image ignored.</yellow>\n");
         
         return null;
     }
@@ -232,7 +231,7 @@ function get_featured_image($url, $referer = "")
     $res = $media_repository->receive_and_save($item_data, $file, true, true, $author);
     if( is_string($res) )
     {
-        cli_colortags::write("<yellow> │   Cannot save media item: $res. Image ignored.</yellow>\n");
+        cli_colortags::write("<yellow> │   Warning: cannot save media item: $res. Image ignored.</yellow>\n");
         
         return null;
     }
