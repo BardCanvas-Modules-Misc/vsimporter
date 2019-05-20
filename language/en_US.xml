@@ -12,8 +12,26 @@
         <i class="fa fa-external-link"></i> Continue reading
     ]]></continue_reading>
     
+    <add_feed>Add feed</add_feed>
+    
+    <feed_name>Feed name:</feed_name>
+    <feed_url>Feed URL:</feed_url>
+    <single_article_prefix>Single Article prefix:</single_article_prefix>
+    
+    <type_optional_name>Type feed name</type_optional_name>
+    <type_feed_url>Type the feed URL</type_feed_url>
+    <type_single_url>Type the URL prefix to fetch a single article</type_single_url>
+    
     <settings_data>
         <title>Vertical Search Importer</title>
+        
+        <specs key="feeds">
+            <title>Source feeds</title>
+            <description><![CDATA[
+                Specify the source feeds for the fetcher.
+            ]]></description>
+            <type>@vsimporter:specs_renderer/feeds_forger</type>
+        </specs>
         
         <specs key="feed_url">
             <title>VS feed URL</title>
@@ -120,13 +138,13 @@ Yet another category name: keyword, keyword, keyword...
         </specs>
         
         <specs key="last_article_id">
-            <title>Last fetched article id</title>
+            <title>Last fetched article ids</title>
             <description><![CDATA[
-                This value is stored by the fetcher. You normally wouldn't have to
-                modify it here, but if you need to re-fetch articles, set here the number 
-                the fetcher should start with before the next run.
+                These values are stored by the fetcher. You normally wouldn't have to
+                modify them here, but if you need to re-fetch articles, set here the number 
+                the fetcher should start with before the next run for each feed.
             ]]></description>
-            <type>number</type>
+            <type>code</type>
         </specs>
         
     </settings_data>

@@ -24,6 +24,11 @@
                 <get_processed_content priority="001">extenders/single_post_content_trimmer.inc</get_processed_content>
             </post_record_class>
         </posts>
+        <settings>
+            <specs_renderer>
+                <feeds_forger>extenders/settings_feeds_forger.inc</feeds_forger>
+            </specs_renderer>
+        </settings>
     </extends_to>
     
 </module>
