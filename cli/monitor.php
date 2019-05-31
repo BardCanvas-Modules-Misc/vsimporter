@@ -209,7 +209,7 @@ $featured_keywords     = empty($raw_featured_keywords) ? array() : preg_split('/
 if( empty($featured_tag) )      cli_colortags::write("<brown> * Note: featured tag is empty. No posts will be set as featured.</brown> ");
 if( empty($featured_keywords) ) cli_colortags::write("<brown> * Note: featured keywords list is empty. No posts will be set as featured.</brown> ");
 
-foreach( $feed_sources as $feed_name => &$feed_data )
+foreach( $feed_sources as $feed_name => $feed_data )
 {
     $feed_url = $feed_data->url;
     $offset   = $feed_data->last_pid;
@@ -428,7 +428,7 @@ foreach( $feed_sources as $feed_name => &$feed_data )
     
     if( ! empty($lastpid) )
     {
-        $feed_data->last_pid = $last_pid;
+        $feed_sources[$feed_name]->last_pid = $lastpid;
         cli_colortags::write("<light_cyan> > Last article id set to $lastpid</light_cyan>\n");
     }
     
