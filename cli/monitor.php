@@ -238,11 +238,10 @@ foreach( $feed_sources as $feed_name => $feed_data )
         cli_colortags::write(
             "\n<yellow>Error fetching the feed:</yellow>\n" .
             "<yellow>$error</yellow>\n" .
-            "<yellow>Aborting.</yellow>\n\n"
+            "<yellow>Skipping it.</yellow>\n\n"
         );
-        @unlink(LOCK_FILE);
         
-        die();
+        continue;
     }
     cli_colortags::write(sprintf(
         "<light_green>OK!</light_green> <white>%s KiB downloaded in %s seconds.</white>\n",
@@ -258,23 +257,22 @@ foreach( $feed_sources as $feed_name => $feed_data )
             "<yellow>Feed malformed!</yellow>\n" .
             "<yellow>The feed contents doesn't seem to be JSON encoded.</yellow>\n" .
             "<yellow>Please check the URL and fetch it manually, then validate it.</yellow>\n" .
-            "<yellow>Aborting.</yellow>\n\n"
+            "<yellow>Skipping it.</yellow>\n\n"
         );
-        @unlink(LOCK_FILE);
         
-        die();
+        continue;
     }
     
     if( empty($feed->pages) )
     {
-        cli_colortags::write("<light_purple> > Feed seems to be empty.</light_purple>\n");
-        cli_colortags::write("<cyan>Feed integration finished.</cyan>\n");
-        $seconds = time() - $start;
-        cli_colortags::write("<cyan>Finished in $seconds seconds.</cyan>\n\n");
-        @unlink(LOCK_FILE);
+        cli_colortags::write("<light_purple> > Feed seems to be empty. Continuing.</light_purple>\n");
         
-        die();
+        continue;
     }
+    
+    #
+    # Feed integration
+    #
     
     $feed->pages = (array) $feed->pages;
     
