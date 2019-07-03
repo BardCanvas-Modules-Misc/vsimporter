@@ -312,7 +312,9 @@ foreach( $feed_sources as $feed_name => $feed_data )
         }
         
         # Notify
+        $published = time_elapsed_string($post->publishing_date);
         cli_colortags::write("<green> │ > ($index/$count) Got #$post->id_post '$post->title'.</green>\n");
+        cli_colortags::write("<light_gray> │   Published on {$post->publishing_date} ($published)</light_gray>\n");
         
         # Fetch article
         $article_url = $feed_data->prefix . urlencode($page->url);
