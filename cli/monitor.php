@@ -20,6 +20,7 @@ include "../../config.php";
 include "../../includes/bootstrap.inc";
 include "../../includes/self_running_checker.inc";
 include "functions.inc";
+set_time_limit(300);
 
 #region Prechecks
 
