@@ -420,7 +420,8 @@ foreach( $feed_sources as $feed_name => $feed_data )
         {
             sort($tags);
             $posts_repository->set_tags($tags, $post->id_post);
-            cli_colortags::write("<light_green> Tags: #" . implode(" #", $tags) . "</light_green>");
+            $tag_lines = wordwrap(" Tags: #" . implode(" #", $tags) . "", 110, "</light_green>\n<light_green> │                     ");
+            cli_colortags::write("<light_green>$tag_lines</light_green>");
         }
         
         cli_colortags::write("\n");
