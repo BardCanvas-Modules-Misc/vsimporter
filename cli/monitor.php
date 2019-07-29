@@ -285,6 +285,9 @@ foreach( $feed_sources as $feed_name => $feed_data )
     {
         if( $page->id > $lastpid ) $lastpid = $page->id;
         $index++;
+    
+        $page->microdata->date = trim($page->microdata->date);
+        if( empty($page->microdata->date) ) $page->microdata->date = date("Y-m-d H:i:s");
         
         # Pre-forging
         $post = new post_record(array(
@@ -396,6 +399,8 @@ foreach( $feed_sources as $feed_name => $feed_data )
         # Featured image
         if( ! empty($page->main_image_url) )
         {
+            $page->main_image_url = str_replace("'", "", $page->main_image_url);
+            $page->main_image_url = str_replace('"', "", $page->main_image_url);
             $item = get_featured_image($page->main_image_url, $page->url);
             if( ! empty($item) )
             {
