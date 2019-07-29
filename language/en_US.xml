@@ -33,22 +33,6 @@
             <type>@vsimporter:specs_renderer/feeds_forger</type>
         </specs>
         
-        <specs key="feed_url">
-            <title>VS feed URL</title>
-            <description><![CDATA[
-                Specify the URL of the Vertical Search feed to pull articles from.
-            ]]></description>
-            <type>text</type>
-        </specs>
-        
-        <specs key="item_url_prefix">
-            <title>VS single item URL prefix</title>
-            <description><![CDATA[
-                Specify the single item URL prefix to pull a single article contents.
-            ]]></description>
-            <type>text</type>
-        </specs>
-        
         <specs key="user_agents">
             <title>User Agents for the file fetchers</title>
             <description><![CDATA[
