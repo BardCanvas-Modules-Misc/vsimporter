@@ -13,6 +13,8 @@ if( empty($post) ) return;
 
 $source = $post->get_meta("vsimporter.source_url");
 
+if( empty($source) ) return;
+
 if( $template->get("page_tag") != "single_post" )
 {
     if( ! empty($source) )
