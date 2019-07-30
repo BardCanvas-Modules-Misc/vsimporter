@@ -231,7 +231,9 @@ function get_featured_image($url, $referer = "")
     $res = $media_repository->receive_and_save($item_data, $file, true, true, $author);
     if( is_string($res) )
     {
-        cli_colortags::write("<yellow> │   Warning: cannot save media item: $res. Image ignored.</yellow>\n");
+        cli_colortags::write("<yellow> │   Warning: cannot save media item:</yellow>\n");
+        cli_colortags::write(" |   " . str_replace("\n", "\n |   ", trim($res)) . "\n");
+        cli_colortags::write("<yellow> |   Image ignored.</yellow>\n");
         
         return null;
     }
