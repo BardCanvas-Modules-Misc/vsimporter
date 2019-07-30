@@ -1,6 +1,13 @@
 
 # VS Importer Module Change Log
 
+## [0.1.3] - 2019-07-29
+
+- Removed deprecated settings entries.
+- Added fallback for missing publishing dates.
+- Tuned image management function.
+- Added missing check to avoid trimming on non-downloaded posts.
+
 ## [0.1.2] - 2019-07-02
 
 - Fixed issues in monitor loop.
