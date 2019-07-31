@@ -1,6 +1,10 @@
 
 # VS Importer Module Change Log
 
+## [0.1.4] - 2019-07-30
+
+- Added muting prefs to feed accounts.
+
 ## [0.1.3] - 2019-07-29
 
 - Removed deprecated settings entries.
