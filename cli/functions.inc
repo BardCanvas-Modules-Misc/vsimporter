@@ -89,7 +89,7 @@ function find_featured_keywords()
 
 function forge_author()
 {
-    global $fallback_account, $page, $user_level, $settings, $post;
+    global $fallback_account, $page, $user_level, $settings, $post, $mem_cache;
     
     $post_domain = current(explode("/", preg_replace('#http://|https://|www\.#i', "", $page->url)));
     if( empty($post_domain) )
@@ -122,6 +122,15 @@ function forge_author()
             $author->state         = "enabled";
             $author->level         = $user_level;
             $author->save();
+            
+            $author->set_engine_pref("@comment_likes:enable_notifications", "false");
+            $author->set_engine_pref("@comments:email_on_post_comments",    "false");
+            $author->set_engine_pref("@comments:email_on_comment_replies",  "false");
+            $author->set_engine_pref("@contact:allow_emails",               "false");
+            $author->set_engine_pref("@post_ratings:enable_notifications",  "false");
+            $author->set_engine_pref("user_blocking.pms/*",                 "true" );
+            
+            $mem_cache->purge_by_prefix("accounts_repository/get_multiple_engine_prefs/");
             
             cli_colortags::write("<green> │   Author '$author->display_name' account created. Id: $author->id_account</green>\n");
         }
