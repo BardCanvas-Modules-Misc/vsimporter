@@ -67,6 +67,11 @@ foreach(explode("\n", $raw_sources) as $line)
 }
 
 $raw_pids = $settings->get("modules:vsimporter.last_article_id");
+if( date("w") == 0 && date("G") == 0 )
+{
+    $raw_pids = "";
+    cli_colortags::write("<yellow>[$now] Note: feeds maintenance has reset the last PID counters to force refetchs.</yellow>\n");
+}
 if( ! empty($raw_pids) )
 {
     foreach(explode("\n", $raw_pids) as $line)
