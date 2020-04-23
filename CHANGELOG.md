@@ -1,6 +1,10 @@
 
 # VS Importer Module Change Log
 
+## [0.1.6] - 2020-04-23
+
+- Added encoding checks on the CLI importer.
+
 ## [0.1.5] - 2019-11-02
 
 - Added feed counters reset once a week.
