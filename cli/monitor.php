@@ -308,6 +308,10 @@ foreach( $feed_sources as $feed_name => $feed_data )
             "last_udpate"     => date("Y-m-d H:i:s"),
         ));
         
+        # Some sanitization
+        $tmp = @json_encode($post->title);   if( ! $tmp ) $post->title   = utf8_encode($post->title);
+        $tmp = @json_encode($post->excerpt); if( ! $tmp ) $post->excerpt = utf8_encode($post->excerpt);
+        
         # Check for existence by permalink
         $src_key = "vsimporter.source_url";
         $plink   = addslashes(serialize($page->url));
@@ -371,9 +375,13 @@ foreach( $feed_sources as $feed_name => $feed_data )
             
             continue;
         }
-        $article     = current($obj->pages);
+        
+        $article = current($obj->pages);
+        
         /** @noinspection HtmlDeprecatedTag */
-        $contents    = strip_tags($article->summary, "<b><i><em><strong><u><strike><sup><sub><br>");
+        $contents = strip_tags($article->summary, "<b><i><em><strong><u><strike><sup><sub><br>");
+        $tmp      = @json_encode($contents); if( ! $tmp ) $contents = utf8_encode($contents);
+        
         $paragraphs  = explode("\n\n", $contents);
         $raw_content = "$post->title\n\n";
         foreach($paragraphs as $paragraph)
